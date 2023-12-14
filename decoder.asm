@@ -16,7 +16,7 @@ WinMain:
 xoring:
 	pop rsi
 	xor rcx, rcx
-	mov cx, 0x1cc
+	mov cx, 0x1cc ; loop is based on cx , decrements with every iteration , breaks at 0.
 decode:
 	xor byte [rsi], al
 	inc rsi
